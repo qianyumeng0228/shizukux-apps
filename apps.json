@@ -1,0 +1,26 @@
+{
+  "name": "ShizukuX 应用商店",
+  "schemaVersion": 1,
+  "updatedAt": 1794510086,
+  "apps": [
+    {
+      "id": "com.omarea.vtools",
+      "name": "星野scene",
+      "nameZh": "星野scene",
+      "packageName": "com.omarea.vtools",
+      "versionName": "N1 2026.10 Alpha14 Lite Relay",
+      "versionCode": 920261010,
+      "author": "xingyeovo / qianyumeng0228",
+      "description": "Hoshino Scene performance toolbox with the ShizukuX ADB relay patch.",
+      "descriptionZh": "星野 Scene 性能工具箱，已注入 ShizukuX ADB 激活中继：打开 Scene 点「ADB 模式」即可自动拉起 scene-daemon，不用再连电脑执行 up.sh。依赖 ShizukuX dropin 版（moe.shizuku.privileged.api）。",
+      "downloadUrl": "https://github.com/qianyumeng0228/scene-shizukux/releases/download/v1.2.1-N1A14Lite-relay/SCENE-N1-2026.10-Alpha14Lite-Relay.apk",
+      "fallbackUrl": "https://gh-proxy.com/https://github.com/qianyumeng0228/scene-shizukux/releases/download/v1.2.1-N1A14Lite-relay/SCENE-N1-2026.10-Alpha14Lite-Relay.apk",
+      "sizeBytes": 8468270,
+      "sha256": "761262193AC2436CCDF3A58A64EECC1511E5DEFAE13A871B27D4B2C98C399145",
+      "minSdk": 26,
+      "tags": ["scene", "性能", "调度", "ShizukuX"],
+      "lastUpdated": 1794500000,
+      "sourceRepo": "qianyumeng0228/scene-shizukux"
+    }
+  ]
+}

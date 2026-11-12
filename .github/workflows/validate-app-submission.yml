@@ -1,0 +1,58 @@
+name: Validate app submission
+
+on:
+  issues:
+    types: [opened, edited, labeled]
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  validate:
+    if: contains(github.event.issue.labels.*.name, 'app-submission')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Parse and validate issue form
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body || '';
+            const field = (label) => {
+              const re = new RegExp(`###\\s*${label}\\s*\\n+([^\\n#]*)`, 'i');
+              const m = body.match(re);
+              return m ? m[1].trim() : '';
+            };
+            const pkg = field('包名');
+            const name = field('应用名称');
+            const ver = field('版本名');
+            const code = field('版本号\\s*（?versionCode.*?）?');
+            const url = field('下载直链.*');
+            const sha = field('SHA-256');
+            const size = field('文件大小.*');
+
+            const errors = [];
+            if (!/^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$/.test(pkg)) errors.push('包名格式不正确');
+            if (!/^\d+$/.test(code.replace(/[^0-9]/g, ''))) errors.push('versionCode 必须是纯数字');
+            if (!/^https:\/\//.test(url)) errors.push('下载直链必须是 https 地址');
+            if (!/^[0-9a-fA-F]{64}$/.test(sha)) errors.push('SHA-256 必须是 64 位十六进制');
+
+            let existing = [];
+            try { existing = JSON.parse(require('fs').readFileSync('apps.json', 'utf8')).apps || []; } catch (e) {}
+            const duplicate = existing.find(a => a.packageName === pkg);
+            const note = duplicate
+              ? `\n\n> 该包名已存在条目 \`${duplicate.versionName}\`。若这是升级，请直接修改原条目而不是新增。`
+              : '';
+
+            const ok = errors.length === 0;
+            const msg = ok
+              ? `字段校验通过：\`${pkg}\` ${ver}（versionCode ${code}），等待维护者审核合并进 \`apps.json\`。${note}`
+              : `字段校验未通过：\n${errors.map(e => `- ${e}`).join('\n')}\n\n请编辑本 Issue 修正后会自动重新校验。`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: msg
+            });
